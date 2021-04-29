@@ -5,7 +5,7 @@ from macd_stock import graph_macd
 import pandas_datareader.data as web
 import datetime as dt
 
-ticker = 'EBAY'  # place ticker symbol
+ticker = ''  # place ticker symbol
 
 # gathering the data
 start = dt.datetime(2021, 2, 1)  # Creating a start date of beg. of 2020 for stock

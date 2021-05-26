@@ -8,6 +8,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 from progiler import time_this
+from typing import Union
 
 
 # @time_this
@@ -63,3 +64,39 @@ def graph_macd(data_frame: pd.DataFrame) -> None:
     axs[2].grid(True)
 
     return plt.show()
+
+
+def compute_mcd(eod_data: pd.DataFrame,
+                 sm_window: int = 12,
+                 lg_window: int = 26) -> Union[int, float]:
+    sm_exp = eod_data['Adj Close'].ewm(span=sm_window,
+                                       adjust=False).mean()  # getting the exp. moving average of the first period
+    lg_exp = eod_data['Adj Close'].ewm(span=lg_window,
+                                       adjust=False).mean()  # getting the exp. moving average of the second period
+
+    macd_calc = sm_exp - lg_exp  # obtaining the MACD from subtracting the EMA's
+    eod_data['MACD'] = macd_calc  # putting MACD into the dataframe
+
+    eod_data['MACD_MA'] = macd_calc.rolling(window=9).mean()  # obtaining the moving average of the MACD
+
+    # determining where the macd is in relation to signal line
+    # returns a buy oppurtunity when macd passes signal line on present day with past lower than signal
+    if eod_data['MACD'].iloc[-2] <= eod_data['MACD_MA'].iloc[-2] and \
+            eod_data['MACD'].iloc[-1] >= eod_data['MACD_MA'].iloc[-1]:
+        success = 1
+        return success
+    # return value is if both present and past is below signal line
+    if eod_data['MACD'].iloc[-2] <= eod_data['MACD_MA'].iloc[-2] and \
+            eod_data['MACD'].iloc[-1] <= eod_data['MACD_MA'].iloc[-1]:
+        success = 0
+        return success
+    # return value is if past is above signal but then goes down again in present
+    if eod_data['MACD'].iloc[-2] >= eod_data['MACD_MA'].iloc[-2] and \
+            eod_data['MACD'].iloc[-1] <= eod_data['MACD_MA'].iloc[-1]:
+        success = .5
+        return success
+    # both present and pass are above signal, potential buy
+    if eod_data['MACD'].iloc[-2] >= eod_data['MACD_MA'].iloc[-2] and \
+            eod_data['MACD'].iloc[-1] >= eod_data['MACD_MA'].iloc[-1]:
+        success = -1
+        return success

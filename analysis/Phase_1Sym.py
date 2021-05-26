@@ -1,15 +1,19 @@
-from shoes import compute_pctb
-import pandas as pd
-from stripper import convert_to_dt
-import pandas_datareader.data as web
 import datetime as dt
+
+# from test import compute_bb
+# import numpy as np
+import pandas as pd
+import pandas_datareader.data as web
+
+from bb_p1 import compute_pctb
+from stripper import convert_to_dt
 
 # creating empty lists
 ticker = []
 Adj_Close = []
 
-# putting in s&p 500 stocks as csv
-df = convert_to_dt('')
+# putting in s&p 500 stocks
+df = convert_to_dt('constituents_csv.csv')
 
 # for loop to check all stocks
 for i in df['Symbol']:
@@ -23,7 +27,7 @@ for i in df['Symbol']:
         # computing pctb
         pctb = compute_pctb(df)
 
-        # checking to see if pctb is low 
+        # checking to see if pctb is low
         if pctb == 1:
             price = df['Adj Close'].iloc[-1]
             ticker.append(i)

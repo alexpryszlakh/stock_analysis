@@ -1,8 +1,11 @@
+# from test import compute_bb
+# import numpy as np
 import pandas as pd
 from stripper import convert_to_dt
 import pandas_datareader.data as web
 import datetime as dt
-from pants import compute_macd
+from datetime import datetime
+from macd_stock import compute_mcd
 
 # creating empty lists
 ticker = []
@@ -20,9 +23,9 @@ for i in df['Symbol']:
     price = df['Adj Close'].iloc[-1]
     ticker.append(i)
     Adj_Close.append(price)
-    result = compute_macd(df)
+    result = compute_mcd(df)
 
-    # determinig what is the state of each stock in relation to MACD
+    # determining what is the state of each stock in relation to MACD
     if result == 1:
         verdict = 'Buy'
         status.append(verdict)
